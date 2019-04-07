@@ -1,10 +1,14 @@
 {
   "name": "isomor-react",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "Alexandre Piel <alexandre.piel@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/apiel/isomor-react"
+  },
   "scripts": {
     "prepublish": "yarn build",
     "prebuild": "rm -rf dist/",
