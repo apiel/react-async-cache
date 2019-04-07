@@ -1,0 +1,26 @@
+{
+  "name": "isomor-react",
+  "version": "0.0.3",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "author": "Alexandre Piel <alexandre.piel@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "prepublish": "yarn build",
+    "prebuild": "rm -rf dist/",
+    "build": "tsc -p tsconfig.json",
+    "lint": "tslint -p tsconfig.json -c tslint.json"
+  },
+  "dependencies": {
+    "md5": "^2.2.1",
+    "typescript": "^3.4.1"
+  },
+  "devDependencies": {
+    "@types/react": "16.8.10",
+    "@types/react-dom": "16.8.3",
+    "@types/md5": "^2.1.33",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "rimraf": "^2.6.3"
+  }
+}
