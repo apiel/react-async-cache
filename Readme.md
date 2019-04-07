@@ -51,12 +51,12 @@ export const Time = () => {
 }
 ```
 
-**Without cache**, if you would have this component 2 times in your app, it would make 2 requests when the components mount. When you click the `load` button, only the component where the button is located would be refresh.
+**Without cache**, if you would have this component 2 times in your app, it would make 2 requests when the components mount. When you click the `load` button, only the component where the button is located would be refreshed.
 **With the cache**, only 1 request would be sent instead of 2. When you click the `load` button, both component would be refresh.
 
 #### Update response
 
-`isomor-react` has also a mecanism to update the cache, so you don't have to refetch data after update.
+`isomor-react` has also a mecanism to update the cache, so you don't have to refetch data.
 
 ```jsx
 import React from 'react';
@@ -129,6 +129,8 @@ await call(getItems);
 await call(getItem, 'id-20', { withComment: true });
 ```
 
+`response` is the response received after the function has been called.
+
 `update` is a function that allow you to update the cache without to make a call to the server. The first parameter is the new response you want to set. The second parameter is the cached function. The next parameter are the parameters you would have provide to the cached function.
 
 eg.:
@@ -145,3 +147,9 @@ await update({
     comments: [],
 }, getItem, 'id-20', { withComment: true });
 ```
+
+##### ToDo
+
+- error handling
+- provide loading variable
+- batch queries?
