@@ -16,9 +16,23 @@ const initialState = {
     responses: {} as Responses,
 };
 
+export type Update<T = any> = (response: T, fn: (...args: any) => Promise<any>, ...args: any) => Promise<void>;
+export type Call = (fn: (...args: any) => Promise<any>, ...args: any) => Promise<void>;
+export type Cache = (fn: (...args: any) => Promise<any>, ...args: any) => any;
+
+export interface UseIsomorReturn<T = any> {
+    call: Call;
+    response: T;
+    update: Update<T>;
+    cache: Cache;
+};
+
+export type UseIsomor<T = any> = () => UseIsomorReturn<T>;
+
 export const IsomorContext = createContext({
     call: async (...args: any) => { },
     update: async (response: any, ...args: any) => { },
+    cache: (...args: any) => { },
     ...initialState,
 });
 
@@ -26,7 +40,7 @@ interface Props {
     children: React.ReactNode
 }
 
-export const useIsomor = () => {
+export const useIsomor: UseIsomor = () => {
     const { call, responses, ...rest } = useContext(IsomorContext);
     const [id, setId] = useState();
     const [response, setResponse] = useState();
@@ -85,7 +99,7 @@ export class IsomorProvider extends React.Component<Props> {
         return data && (Date.now() - data.requestTime) < 200;
     }
 
-    call = async (fn: (...args: any) => Promise<any>, ...args: any) => {
+    call: Call = async (fn: (...args: any) => Promise<any>, ...args: any) => {
         const id = getId(fn, args);
         if (!this.isAlreadyRequesting(id)) {
             const requestTime = await this.setRequestTime(id, fn, args);
@@ -94,9 +108,14 @@ export class IsomorProvider extends React.Component<Props> {
         }
     }
 
-    update = async (response: any, fn: (...args: any) => Promise<any>, ...args: any) => {
+    update: Update = async (response: any, fn: (...args: any) => Promise<any>, ...args: any) => {
         const id = getId(fn, args);
         await this.setResponse(id, fn, args, Date.now(), response);
+    }
+
+    cache: Cache = (fn: (...args: any) => Promise<any>, ...args: any) => {
+        const id = getId(fn, args);
+        return this.state.responses[id];
     }
 
     render() {
@@ -105,6 +124,7 @@ export class IsomorProvider extends React.Component<Props> {
                 call: this.call,
                 responses: this.state.responses,
                 update: this.update,
+                cache: this.cache,
             }}>
                 {this.props.children}
             </IsomorContext.Provider>
