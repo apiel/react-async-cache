@@ -1,6 +1,6 @@
-~~Need to improve types:~~
+Need to improve types:
 
- - ~~useIsomor<PageData[]>();~~
+ - useIsomor<PageData[]>();
  - ~~need type for update, call and response~~
 
 ~~Add a way to get from cache~~

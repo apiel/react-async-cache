@@ -93,15 +93,7 @@ var initialState = {
     responses: {},
 };
 ;
-export var IsomorContext = createContext(__assign({ call: function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
-            return [2 /*return*/];
-        }); });
-    }, update: function (response) {
+export var IsomorContext = createContext(__assign({ call: function (fn) {
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
@@ -109,13 +101,22 @@ export var IsomorContext = createContext(__assign({ call: function () {
         return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
             return [2 /*return*/];
         }); });
-    }, cache: function () {
+    }, update: function (response, fn) {
         var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            args[_i - 2] = arguments[_i];
+        }
+        return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
+            return [2 /*return*/];
+        }); });
+    }, cache: function (fn) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
         }
     } }, initialState));
-export var useIsomor = function () {
+export function useIsomor() {
+    var _this = this;
     var _a = useContext(IsomorContext), call = _a.call, responses = _a.responses, rest = __rest(_a, ["call", "responses"]);
     var _b = __read(useState(), 2), id = _b[0], setId = _b[1];
     var _c = __read(useState(), 2), response = _c[0], setResponse = _c[1];
@@ -140,7 +141,7 @@ export var useIsomor = function () {
         }
     }); // , [responses]
     return __assign({ call: myCall, response: response }, rest);
-};
+}
 function getId(fn, args) {
     return md5(fn.name + "::" + JSON.stringify(args));
 }

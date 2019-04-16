@@ -16,23 +16,22 @@ const initialState = {
     responses: {} as Responses,
 };
 
-export type Update<T = any> = (response: T, fn: (...args: any) => Promise<any>, ...args: any) => Promise<void>;
-export type Call = (fn: (...args: any) => Promise<any>, ...args: any) => Promise<void>;
-export type Cache = (fn: (...args: any) => Promise<any>, ...args: any) => any;
+export type Fn = (...args: any) => Promise<any>;
+export type Update<T = any> = (response: T, fn: Fn, ...args: any) => Promise<void>;
+export type Call = (fn: Fn, ...args: any) => Promise<void>;
+export type Cache<T = any> = (fn: Fn, ...args: any) => T;
 
 export interface UseIsomorReturn<T = any> {
     call: Call;
     response: T;
     update: Update<T>;
-    cache: Cache;
+    cache: Cache<T>;
 };
 
-export type UseIsomor<T = any> = () => UseIsomorReturn<T>;
-
 export const IsomorContext = createContext({
-    call: async (...args: any) => { },
-    update: async (response: any, ...args: any) => { },
-    cache: (...args: any) => { },
+    call: async (fn: Fn, ...args: any) => { },
+    update: async (response: any, fn: Fn, ...args: any) => { },
+    cache: (fn: Fn, ...args: any): any => { },
     ...initialState,
 });
 
@@ -40,11 +39,11 @@ interface Props {
     children: React.ReactNode
 }
 
-export const useIsomor: UseIsomor = () => {
+export function useIsomor<T = any>(): UseIsomorReturn<T> {
     const { call, responses, ...rest } = useContext(IsomorContext);
     const [id, setId] = useState();
     const [response, setResponse] = useState();
-    const myCall = async (fn: (...args: any) => Promise<any>, ...args: any) => {
+    const myCall = async (fn: Fn, ...args: any) => {
         setId(getId(fn, args));
         call(fn, ...args);
     };
@@ -58,7 +57,7 @@ export const useIsomor: UseIsomor = () => {
     return { call: myCall, response, ...rest };
 }
 
-function getId(fn: (...args: any) => Promise<any>, args: any): string {
+function getId(fn: Fn, args: any): string {
     return md5(`${fn.name}::${JSON.stringify(args)}`);
 }
 
@@ -69,7 +68,7 @@ export class IsomorProvider extends React.Component<Props> {
 
     setResponse = (
         id: string,
-        fn: (...args: any) => Promise<any>,
+        fn: Fn,
         args: any,
         requestTime: number,
         response: any,
@@ -84,7 +83,7 @@ export class IsomorProvider extends React.Component<Props> {
 
     setRequestTime = async(
         id: string,
-        fn: (...args: any) => Promise<any>,
+        fn: Fn,
         args: any,
     ) => {
         const requestTime = Date.now();
@@ -99,7 +98,7 @@ export class IsomorProvider extends React.Component<Props> {
         return data && (Date.now() - data.requestTime) < 200;
     }
 
-    call: Call = async (fn: (...args: any) => Promise<any>, ...args: any) => {
+    call: Call = async (fn: Fn, ...args: any) => {
         const id = getId(fn, args);
         if (!this.isAlreadyRequesting(id)) {
             const requestTime = await this.setRequestTime(id, fn, args);
@@ -108,12 +107,12 @@ export class IsomorProvider extends React.Component<Props> {
         }
     }
 
-    update: Update = async (response: any, fn: (...args: any) => Promise<any>, ...args: any) => {
+    update: Update = async (response: any, fn: Fn, ...args: any) => {
         const id = getId(fn, args);
         await this.setResponse(id, fn, args, Date.now(), response);
     }
 
-    cache: Cache = (fn: (...args: any) => Promise<any>, ...args: any) => {
+    cache: Cache = (fn: Fn, ...args: any) => {
         const id = getId(fn, args);
         return this.state.responses[id].response;
     }
