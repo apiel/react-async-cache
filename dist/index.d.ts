@@ -9,7 +9,7 @@ declare type Responses = {
     [id: string]: Res;
 };
 export declare type Update<T = any> = (response: T, fn: (...args: any) => Promise<any>, ...args: any) => Promise<void>;
-export declare type Call = (fn: (...args: any) => Promise<any>, ...args: any) => Promise<any>;
+export declare type Call = (fn: (...args: any) => Promise<any>, ...args: any) => Promise<void>;
 export declare type Cache = (fn: (...args: any) => Promise<any>, ...args: any) => any;
 export interface UseIsomorReturn<T = any> {
     call: Call;

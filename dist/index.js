@@ -197,7 +197,7 @@ var IsomorProvider = /** @class */ (function (_super) {
                             return [4 /*yield*/, this.setResponse(id, fn, args, requestTime, response)];
                         case 3:
                             _a.sent();
-                            return [2 /*return*/, response];
+                            _a.label = 4;
                         case 4: return [2 /*return*/];
                     }
                 });
@@ -228,7 +228,7 @@ var IsomorProvider = /** @class */ (function (_super) {
                 args[_i - 1] = arguments[_i];
             }
             var id = getId(fn, args);
-            return _this.state.responses[id];
+            return _this.state.responses[id].response;
         };
         return _this;
     }

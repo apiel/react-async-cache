@@ -17,7 +17,7 @@ const initialState = {
 };
 
 export type Update<T = any> = (response: T, fn: (...args: any) => Promise<any>, ...args: any) => Promise<void>;
-export type Call = (fn: (...args: any) => Promise<any>, ...args: any) => Promise<any>;
+export type Call = (fn: (...args: any) => Promise<any>, ...args: any) => Promise<void>;
 export type Cache = (fn: (...args: any) => Promise<any>, ...args: any) => any;
 
 export interface UseIsomorReturn<T = any> {
@@ -105,7 +105,6 @@ export class IsomorProvider extends React.Component<Props> {
             const requestTime = await this.setRequestTime(id, fn, args);
             const response = await fn(...args);
             await this.setResponse(id, fn, args, requestTime, response);
-            return response;
         }
     }
 
@@ -116,7 +115,7 @@ export class IsomorProvider extends React.Component<Props> {
 
     cache: Cache = (fn: (...args: any) => Promise<any>, ...args: any) => {
         const id = getId(fn, args);
-        return this.state.responses[id];
+        return this.state.responses[id].response;
     }
 
     render() {
