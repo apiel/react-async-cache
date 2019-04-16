@@ -92,6 +92,7 @@ import md5 from 'md5';
 var initialState = {
     responses: {},
 };
+;
 export var IsomorContext = createContext(__assign({ call: function () {
         var args = [];
         for (var _i = 0; _i < arguments.length; _i++) {
@@ -108,6 +109,11 @@ export var IsomorContext = createContext(__assign({ call: function () {
         return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
             return [2 /*return*/];
         }); });
+    }, cache: function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
     } }, initialState));
 export var useIsomor = function () {
     var _a = useContext(IsomorContext), call = _a.call, responses = _a.responses, rest = __rest(_a, ["call", "responses"]);
@@ -191,7 +197,7 @@ var IsomorProvider = /** @class */ (function (_super) {
                             return [4 /*yield*/, this.setResponse(id, fn, args, requestTime, response)];
                         case 3:
                             _a.sent();
-                            _a.label = 4;
+                            return [2 /*return*/, response];
                         case 4: return [2 /*return*/];
                     }
                 });
@@ -216,6 +222,14 @@ var IsomorProvider = /** @class */ (function (_super) {
                 });
             });
         };
+        _this.cache = function (fn) {
+            var args = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                args[_i - 1] = arguments[_i];
+            }
+            var id = getId(fn, args);
+            return _this.state.responses[id];
+        };
         return _this;
     }
     IsomorProvider.prototype.render = function () {
@@ -223,6 +237,7 @@ var IsomorProvider = /** @class */ (function (_super) {
                 call: this.call,
                 responses: this.state.responses,
                 update: this.update,
+                cache: this.cache,
             } }, this.props.children));
     };
     return IsomorProvider;
