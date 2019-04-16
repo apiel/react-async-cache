@@ -24,8 +24,8 @@ export type Cache<T = any> = (fn: Fn, ...args: any) => T;
 export interface UseIsomorReturn<T = any> {
     call: Call;
     response: T;
-    update: Update<T>;
-    cache: Cache<T>;
+    update: Update;
+    cache: Cache;
 };
 
 export const IsomorContext = createContext({
