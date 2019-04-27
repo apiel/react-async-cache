@@ -1,6 +1,6 @@
 {
   "name": "react-async-cache",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "Alexandre Piel <alexandre.piel@gmail.com>",
@@ -21,9 +21,9 @@
     "typescript": "^3.4.1"
   },
   "devDependencies": {
+    "@types/md5": "^2.1.33",
     "@types/react": "16.8.10",
     "@types/react-dom": "16.8.3",
-    "@types/md5": "^2.1.33",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "rimraf": "^2.6.3"
