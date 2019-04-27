@@ -3,6 +3,7 @@ import React from 'react';
 import './App.css';
 import { Counter } from './Counter';
 import { SetCounter } from './SetCounter';
+import { ErrorExample } from './ErrorExample';
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
       <Counter />
       <Counter />
       <SetCounter />
+      <ErrorExample />
     </div>
   );
 }

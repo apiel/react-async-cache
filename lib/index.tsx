@@ -8,6 +8,7 @@ interface Res {
     args: any,
     response: any,
     requestTime: number,
+    error: any,
 }
 
 type Responses = { [id: string]: Res };
@@ -26,6 +27,7 @@ export interface UseAsyncCacheReturn<T = any> {
     response: T;
     update: Update;
     cache: Cache;
+    error: any;
 };
 
 export const AsyncCacheContext = createContext({
@@ -43,18 +45,23 @@ export function useAsyncCache<T = any>(): UseAsyncCacheReturn<T> {
     const { call, responses, ...rest } = useContext(AsyncCacheContext);
     const [id, setId] = useState();
     const [response, setResponse] = useState();
+    const [error, setError] = useState();
     const myCall = async (fn: Fn, ...args: any) => {
         setId(getId(fn, args));
         call(fn, ...args);
     };
     useEffect(() => {
         const storeResponse: Res = responses[id];
-        if (storeResponse && storeResponse.response &&
-            (!response || JSON.stringify(response) !== JSON.stringify(storeResponse.response))) {
-            setResponse(storeResponse.response);
+        if (storeResponse) {
+            if (!response || JSON.stringify(response) !== JSON.stringify(storeResponse.response)) {
+                setResponse(storeResponse.response);
+            }
+            if (!error || JSON.stringify(error) !== JSON.stringify(storeResponse.error)) {
+                setError(storeResponse.error);
+            }
         }
     }); // , [responses]
-    return { call: myCall, response, ...rest };
+    return { call: myCall, response, error, ...rest };
 }
 
 function getId(fn: Fn, args: any): string {
@@ -72,11 +79,12 @@ export class AsyncCacheProvider extends React.Component<Props> {
         args: any,
         requestTime: number,
         response: any,
+        error: any,
     ) => {
         return new Promise((resolve) => {
             const { name } = fn;
             const { responses } = this.state;
-            responses[id] = { name, args, response, requestTime };
+            responses[id] = { name, args, response, requestTime, error };
             this.setState({ responses }, resolve);
         });
     }
@@ -89,8 +97,19 @@ export class AsyncCacheProvider extends React.Component<Props> {
         const requestTime = Date.now();
         const data = this.state.responses[id];
         const response = data ? data.response : null;
-        await this.setResponse(id, fn, args, requestTime, response);
+        await this.setResponse(id, fn, args, requestTime, response, null);
         return requestTime;
+    }
+
+    setError = async(
+        id: string,
+        fn: Fn,
+        args: any,
+        error: any,
+    ) => {
+        const data = this.state.responses[id];
+        const response = data ? data.response : null;
+        await this.setResponse(id, fn, args, data.requestTime, response, error);
     }
 
     isAlreadyRequesting = (id: string): boolean => {
@@ -102,14 +121,18 @@ export class AsyncCacheProvider extends React.Component<Props> {
         const id = getId(fn, args);
         if (!this.isAlreadyRequesting(id)) {
             const requestTime = await this.setRequestTime(id, fn, args);
-            const response = await fn(...args);
-            await this.setResponse(id, fn, args, requestTime, response);
+            try {
+                const response = await fn(...args);
+                await this.setResponse(id, fn, args, requestTime, response, null);
+            } catch (error) {
+                this.setError(id, fn, args, error);
+            }
         }
     }
 
     update: Update = async (response: any, fn: Fn, ...args: any) => {
         const id = getId(fn, args);
-        await this.setResponse(id, fn, args, Date.now(), response);
+        await this.setResponse(id, fn, args, Date.now(), response, null);
     }
 
     cache: Cache = (fn: Fn, ...args: any) => {

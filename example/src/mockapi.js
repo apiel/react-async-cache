@@ -22,5 +22,7 @@ export async function api(url, method = 'GET', data = {}) {
             counter = data.value;
             return counter || 1;
         }
+    } else {
+        throw new Error('Unknown route api');
     }
 }

@@ -4,6 +4,7 @@ interface Res {
     args: any;
     response: any;
     requestTime: number;
+    error: any;
 }
 declare type Responses = {
     [id: string]: Res;
@@ -17,6 +18,7 @@ export interface UseAsyncCacheReturn<T = any> {
     response: T;
     update: Update;
     cache: Cache;
+    error: any;
 }
 export declare const AsyncCacheContext: React.Context<{
     responses: Responses;
@@ -32,8 +34,9 @@ export declare class AsyncCacheProvider extends React.Component<Props> {
     state: {
         responses: Responses;
     };
-    setResponse: (id: string, fn: Fn, args: any, requestTime: number, response: any) => Promise<{}>;
+    setResponse: (id: string, fn: Fn, args: any, requestTime: number, response: any, error: any) => Promise<{}>;
     setRequestTime: (id: string, fn: Fn, args: any) => Promise<number>;
+    setError: (id: string, fn: Fn, args: any, error: any) => Promise<void>;
     isAlreadyRequesting: (id: string) => boolean;
     call: Call;
     update: Update;
