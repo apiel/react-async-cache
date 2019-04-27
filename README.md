@@ -24,6 +24,8 @@ This 2 call to `api` function will have the same cache and `api` will be called 
 
 ## Example
 
+See full example at [here](https://github.com/apiel/react-async-cache/tree/master/example).
+
 ![counter-example](https://github.com/apiel/react-async-cache/blob/master/media/react-async-cache.gif?raw=true)
 
 counter.js

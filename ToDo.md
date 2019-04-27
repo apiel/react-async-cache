@@ -1,8 +1,9 @@
 - loading
 - error handling
-- doc more generic
 
 - better error information if miss-use lib
+
+- unit test, integration test?
 
 Need to improve types:
 
