@@ -62,6 +62,38 @@ const App = () => {
 ```
 In this example, without cache there would have been 2 calls to the api, but using `react-async-cache` there is only 1 call. The library will take care to populate the response to all the components.
 
+## update cache
+
+`react-async-cache` provide as well different way to interact with the cache:
+
+```jsx
+import React from 'react';
+import { useAsyncCache } from 'react-async-cache';
+import { api } from './mockapi';
+
+export const SetCounter = () => {
+    const { update, cache } = useAsyncCache();
+    const onReset = async () => {
+        // Call api to update the counter
+        const response = await api('/counter', 'POST', { value: 1 });
+        // Update the cache to populate the response to the other component
+        await update(response, api, '/counter');
+    }
+    const onIncrement = async () => {
+        // Load count value from cache
+        const count = cache(api, '/counter');
+        // Call api
+        const response = await api('/counter', 'POST', { value: count + 1 });
+        // Update cache
+        await update(response, api, '/counter');
+    }
+    return (
+        <div>
+            <button onClick={onIncrement}>+</button> <button onClick={onReset}>Reset</button>
+        </div>
+    );
+}
+```
 
 ## How to use it
 
@@ -89,7 +121,7 @@ export const MyComponent = () => {
 }
 ```
 
-`call` is a function that allow you to cache your original function call. The first parameter you give to `call` is the function you want to cache. The next parameter are the parameters you would have provide to the function you want to cache.
+`call` is a function that allow to cache the original function call. The first given parameter to `call` is the function you want to cache. The next parameters are the parameters you would have providen to the function you want to cache.
 
 ```tsx
 async call(fn: (...args: any) => Promise<any>, ...args: any)
@@ -103,7 +135,7 @@ await call(getItem, 'id-20', { withComment: true });
 
 `response` is the response received after the function has been called.
 
-`update` is a function that allow you to update the cache without to make a call to the server. The first parameter is the new response you want to set. The second parameter is the cached function. The next parameter are the parameters you would have provide to the cached function.
+`update` is a function that allow to update the cache without to make a call to the server. The first parameter is the new response you want to set. The second parameter is the cached function. The next parameter are the parameters you would have providen to the cached function.
 
 eg.:
 
