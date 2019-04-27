@@ -114,7 +114,7 @@ ReactDOM.render((
 
 ```
 
-Then use the hook `useAsyncCache` in the components. This hook return an object of 4 values: `call`, `update`, `response` and `cache`.
+Then use the hook `useAsyncCache` in the components. This hook return an object of 5 properties: `call`, `update`, `response`, `error` and `cache`.
 
 ```tsx
 import { useAsyncCache } from 'react-async-cache';
@@ -138,6 +138,8 @@ await call(getItem, 'id-20', { withComment: true });
 ```
 
 `response` is the response received after the function has been called.
+
+`error` is the error received if the function called failed.
 
 `update` is a function that allow to update the cache without to make a call to the server. The first parameter is the new response you want to set. The second parameter is the cached function. The next parameter are the parameters you would have providen to the cached function.
 
