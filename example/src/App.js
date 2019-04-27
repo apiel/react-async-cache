@@ -9,7 +9,7 @@ const App = () => {
     <div className="App">
       <header className="App-header">
         <p>
-          isomor-react
+          react-async-cache
         </p>
       </header>
       <Counter />

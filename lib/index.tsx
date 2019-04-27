@@ -21,14 +21,14 @@ export type Update<T = any> = (response: T, fn: Fn, ...args: any) => Promise<voi
 export type Call = (fn: Fn, ...args: any) => Promise<void>;
 export type Cache<T = any> = (fn: Fn, ...args: any) => T;
 
-export interface UseIsomorReturn<T = any> {
+export interface UseAsyncCacheReturn<T = any> {
     call: Call;
     response: T;
     update: Update;
     cache: Cache;
 };
 
-export const IsomorContext = createContext({
+export const AsyncCacheContext = createContext({
     call: async (fn: Fn, ...args: any) => { },
     update: async (response: any, fn: Fn, ...args: any) => { },
     cache: (fn: Fn, ...args: any): any => { },
@@ -39,8 +39,8 @@ interface Props {
     children: React.ReactNode
 }
 
-export function useIsomor<T = any>(): UseIsomorReturn<T> {
-    const { call, responses, ...rest } = useContext(IsomorContext);
+export function useAsyncCache<T = any>(): UseAsyncCacheReturn<T> {
+    const { call, responses, ...rest } = useContext(AsyncCacheContext);
     const [id, setId] = useState();
     const [response, setResponse] = useState();
     const myCall = async (fn: Fn, ...args: any) => {
@@ -61,7 +61,7 @@ function getId(fn: Fn, args: any): string {
     return md5(`${fn.name}::${JSON.stringify(args)}`);
 }
 
-export class IsomorProvider extends React.Component<Props> {
+export class AsyncCacheProvider extends React.Component<Props> {
     state = {
         ...initialState,
     };
@@ -119,14 +119,14 @@ export class IsomorProvider extends React.Component<Props> {
 
     render() {
         return (
-            <IsomorContext.Provider value={{
+            <AsyncCacheContext.Provider value={{
                 call: this.call,
                 responses: this.state.responses,
                 update: this.update,
                 cache: this.cache,
             }}>
                 {this.props.children}
-            </IsomorContext.Provider>
+            </AsyncCacheContext.Provider>
         );
     }
 }

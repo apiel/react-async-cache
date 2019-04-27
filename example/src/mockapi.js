@@ -1,7 +1,15 @@
 let counter = 1;
 
+// simulate a little bit of latency
 const latency = () => new Promise(resolve => setTimeout(resolve, Math.random() * 100));
 
+/**
+ * This function is intended to simulate an asynchrone api call like fetch, axios...
+ *
+ * @param {string} url
+ * @param {string} method
+ * @param {any} data
+ */
 export async function api(url, method = 'GET', data = {}) {
     if (url === '/counter') {
         if (method === 'GET') {

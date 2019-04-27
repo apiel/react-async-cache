@@ -1,118 +1,90 @@
-# Isomor-react
+# react-async-cache
 
-`Isomor-react` is a library that will help you to use [isomor](https://github.com/apiel/isomor) with react. When you are using `isomor` wihtout this library each call to server functions will generate a request. `Isomor-react` will create a cache and distinct duplicated request. It will also allow you to share the response to a server function between multiple components.
+`react-async-cache` is a library to cache asynchrone function call between different component.
+It was initially build to improve cache of api call while using [isomor](https://github.com/apiel/isomor) with react. This library can be especially useful to cache some fetch query, for example using axios. The concept was inspired from Apollo cache, even if it is far from being comparable.
 
-### Example
+The library take care to save the response of the async function and share it between components using context api. It will also avoid unnecessary call made simultaneously to the same async function. It will identify the cache id base on the name of the function and the parameters passed. So if you call multiple times the same function with different parameters, it will not use the same cache. Example:
 
-#### Get response
-
-Without cache you would do:
-
-```jsx
-import { getTime } from './server/getTime';
-
-export const Time = () => {
-  const [time, setTime] = React.useState<string>();
-  const load = async () => {
-      setTime(await getTime());
-  }
-  React.useEffect(() => { load(); }, []);
-  return (
-    <div>
-      {!time ? <p>Loading...</p> : (
-        <p><b>Server time:</b> {time} <button onClick={load}>reload</button></p>
-      )}
-    </div>
-  );
-}
+api is an async function
+```js
+export api = async (param1, param2) => ...
 ```
 
-Using the cache:
+```js
+  call(api, '/counter');
+  call(api, '/timer');
+```
+This 2 call to `api` function will have different cache because they don't share the same parameters.
 
+```js
+  call(api, '/counter');
+  call(api, '/counter');
+```
+This 2 call to `api` function will have the same cache and `api` will be called only once.
+
+## Example
+
+counter.js
 ```jsx
 import React from 'react';
-import { useIsomor } from 'isomor-react';
+import { useAsyncCache } from 'react-async-cache';
+import { api } from './mockapi';
 
-import { getTime } from './server/getTime';
-
-export const Time = () => {
-  const { call, response } = useIsomor();
-  const load = () => {
-    call(getTime);
-  }
-  React.useEffect(() => { load(); }, []);
-  return (
-    <div>
-      {!response ? <p>Loading...</p> : (
-        <p><b>Server time:</b> {response.time} <button onClick={load}>reload</button></p>
-      )}
-    </div>
-  );
+export const Counter = () => {
+    const { call, response } = useAsyncCache();
+    React.useEffect(() => {
+        // call api to get current counter value and cache it
+        // it will avoid unnecessary simultanous call
+        call(api, '/counter');
+    });
+    return (
+        <div>
+            Counter: { response || 'loading...'}
+        </div>
+    );
 }
 ```
 
-**Without cache**, if you would have this component 2 times in your app, it would make 2 requests when the components mount. When you click the `load` button, only the component where the button is located would be refreshed.
-**With the cache**, only 1 request would be sent instead of 2. When you click the `load` button, both component would be refresh.
-
-#### Update response
-
-`isomor-react` has also a mecanism to update the cache, so you don't have to refetch data.
-
+app.js
 ```jsx
 import React from 'react';
-import { useIsomor } from 'isomor-react';
+import { AsyncCacheProvider } from 'react-async-cache';
+import { Counter } from './Counter';
 
-import { getTime } from './server/getTime';
-import { setTime } from './server/setTime';
-
-export const Time = () => {
-  const { call, response, update } = useIsomor();
-  const load = () => {
-    call(getTime);
-  }
-  React.useEffect(() => { load(); }, []);
-  const onClickUpdate = (newColor: string) => async () => {
-    const newTime = await setTime('08:00');
-    update(newTime, getTime);
-  }
+const App = () => {
   return (
-    <div>
-      {!response ? <p>Loading...</p> : (
-        <p>
-          <b>Server time:</b> {response.time}
-          <button onClick={load}>reload</button>
-          <button onClickUpdate={load}>update</button>
-        </p>
-      )}
-    </div>
+    <AsyncCacheProvider>
+      <Counter />
+      <Counter />
+    </AsyncCacheProvider>
   );
 }
 ```
+In this example, without cache there would have been 2 calls to the api, but using `react-async-cache` there is only 1 call. The library will take care to populate the response to all the components.
 
-When you click the button `update`, the update request is sent to the server, when the response is received, the cache is updated and the 2 components get updated.
 
-### How to use it
+## How to use it
 
-`Isomor-react` is using the context api to share the state between component. So the first thing you need to do is to call the context provider in the root of your app:
+`react-async-cache` is using the context api to share the state between component. So the first thing to do is to call the context provider in the root of the app:
 
 ```tsx
-import { IsomorProvider } from 'isomor-react';
+import { AsyncCacheProvider } from 'react-async-cache';
 
 ReactDOM.render((
-    <IsomorProvider>
+    <AsyncCacheProvider>
         <App />
-    </IsomorProvider>
+    </AsyncCacheProvider>
 ), document.getElementById('root'));
 
 ```
 
-The you just have to use the hook `useIsomor`. This hook return an object of 3 values: `call`, `update` and `response`.
+Then use the hook `useAsyncCache` in the components. This hook return an object of 4 values: `call`, `update`, `response` and `cache`.
 
 ```tsx
-import { useIsomor } from 'isomor-react';
+import { useAsyncCache } from 'react-async-cache';
 
 export const MyComponent = () => {
-    const { call, response, update } = useIsomor();
+    const { call, response, update } = useAsyncCache();
     ...
 }
 ```
@@ -148,8 +120,96 @@ await update({
 }, getItem, 'id-20', { withComment: true });
 ```
 
-##### ToDo
+`cache` is a function to access the cache. It work the same way as the `call` function, but it will get the `response` from the cache, instead to call the async function.
 
-- error handling
-- provide loading variable
-- batch queries?
+
+## Use with isomor
+
+### Example
+
+#### Get response
+
+Without cache you would do:
+
+```jsx
+import { getTime } from './server/getTime';
+
+export const Time = () => {
+  const [time, setTime] = React.useState<string>();
+  const load = async () => {
+      setTime(await getTime());
+  }
+  React.useEffect(() => { load(); }, []);
+  return (
+    <div>
+      {!time ? <p>Loading...</p> : (
+        <p><b>Server time:</b> {time} <button onClick={load}>reload</button></p>
+      )}
+    </div>
+  );
+}
+```
+
+Using the cache:
+
+```jsx
+import React from 'react';
+import { useAsyncCache } from 'react-async-cache';
+
+import { getTime } from './server/getTime';
+
+export const Time = () => {
+  const { call, response } = useAsyncCache();
+  const load = () => {
+    call(getTime);
+  }
+  React.useEffect(() => { load(); }, []);
+  return (
+    <div>
+      {!response ? <p>Loading...</p> : (
+        <p><b>Server time:</b> {response.time} <button onClick={load}>reload</button></p>
+      )}
+    </div>
+  );
+}
+```
+
+**Without cache**, if you would have this component 2 times in your app, it would make 2 requests when the components mount. When you click the `load` button, only the component where the button is located would be refreshed.
+**With the cache**, only 1 request would be sent instead of 2. When you click the `load` button, both component would be refresh.
+
+#### Update response
+
+`react-async-cache` has also a mecanism to update the cache, so you don't have to refetch data.
+
+```jsx
+import React from 'react';
+import { useAsyncCache } from 'react-async-cache';
+
+import { getTime } from './server/getTime';
+import { setTime } from './server/setTime';
+
+export const Time = () => {
+  const { call, response, update } = useAsyncCache();
+  const load = () => {
+    call(getTime);
+  }
+  React.useEffect(() => { load(); }, []);
+  const onClickUpdate = (newColor: string) => async () => {
+    const newTime = await setTime('08:00');
+    update(newTime, getTime);
+  }
+  return (
+    <div>
+      {!response ? <p>Loading...</p> : (
+        <p>
+          <b>Server time:</b> {response.time}
+          <button onClick={load}>reload</button>
+          <button onClickUpdate={load}>update</button>
+        </p>
+      )}
+    </div>
+  );
+}
+```
+
+When you click the button `update`, the update request is sent to the server, when the response is received, the cache is updated and the 2 components get updated.

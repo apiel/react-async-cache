@@ -4718,9 +4718,9 @@ isobject@^3.0.0, isobject@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
 
-isomor-react@^0.0.8:
+react-async-cache@^0.0.8:
   version "0.0.8"
-  resolved "https://registry.yarnpkg.com/isomor-react/-/isomor-react-0.0.8.tgz#389eb2e1300cf5341001618d8075eb41963a1150"
+  resolved "https://registry.yarnpkg.com/react-async-cache/-/react-async-cache-0.0.8.tgz#389eb2e1300cf5341001618d8075eb41963a1150"
   dependencies:
     md5 "^2.2.1"
     typescript "^3.4.1"
