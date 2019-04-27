@@ -12,13 +12,13 @@ export declare type Fn = (...args: any) => Promise<any>;
 export declare type Update<T = any> = (response: T, fn: Fn, ...args: any) => Promise<void>;
 export declare type Call = (fn: Fn, ...args: any) => Promise<void>;
 export declare type Cache<T = any> = (fn: Fn, ...args: any) => T;
-export interface UseIsomorReturn<T = any> {
+export interface UseAsyncCacheReturn<T = any> {
     call: Call;
     response: T;
     update: Update;
     cache: Cache;
 }
-export declare const IsomorContext: React.Context<{
+export declare const AsyncCacheContext: React.Context<{
     responses: Responses;
     call: (fn: Fn, ...args: any) => Promise<void>;
     update: (response: any, fn: Fn, ...args: any) => Promise<void>;
@@ -27,8 +27,8 @@ export declare const IsomorContext: React.Context<{
 interface Props {
     children: React.ReactNode;
 }
-export declare function useIsomor<T = any>(): UseIsomorReturn<T>;
-export declare class IsomorProvider extends React.Component<Props> {
+export declare function useAsyncCache<T = any>(): UseAsyncCacheReturn<T>;
+export declare class AsyncCacheProvider extends React.Component<Props> {
     state: {
         responses: Responses;
     };
