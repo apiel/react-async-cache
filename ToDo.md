@@ -1,3 +1,9 @@
+- loading
+- error handling
+- doc more generic
+
+- better error information if miss-use lib
+
 Need to improve types:
 
  - useIsomor<PageData[]>();

@@ -10,6 +10,7 @@
     "url": "https://github.com/apiel/isomor-react"
   },
   "scripts": {
+    "build-link": "yarn build && rm -rf example/node_modules/isomor-react/dist/* && cp dist/* example/node_modules/isomor-react/dist/",
     "prepublish": "yarn build",
     "prebuild": "rm -rf dist/",
     "build": "tsc -p tsconfig.json",
