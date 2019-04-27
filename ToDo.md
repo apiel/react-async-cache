@@ -1,5 +1,3 @@
-- loading
-- error handling
 
 - better error information if miss-use lib
 
