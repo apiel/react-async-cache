@@ -1,6 +1,3 @@
-- useAsyncCacheEffect -> including useEffect ?
-    - useAsyncCacheEffect(deps: [], fn: Fn, ...args: any): UseAsyncCacheReturn & load
-    - useAsyncCacheEffect(fn: Fn, ...args: any): UseAsyncCacheReturn & load
 
 - better error information if miss-use lib
 

@@ -168,23 +168,28 @@ await update({
 
 ```js
     const { call, response } = useAsyncCache();
+    const load = async() => {
+      await call(someAsyncFunc, someParams);
+    }
     React.useEffect(() => {
-        call(someAsyncFunc, someParams);
+        load();
     });
 ```
 
 Therefor `react-async-cache` provide `useAsyncCacheEffect` to simplify it to:
 
 ```js
-    const { response } = useAsyncCacheEffect(someAsyncFunc, someParams);
+    const { response, load } = useAsyncCacheEffect(someAsyncFunc, someParams);
     // or
-    const { response } = useAsyncCacheEffect([], someAsyncFunc, someParams); // where [] is the deps from React.useEffect
+    const { response, load } = useAsyncCacheEffect([], someAsyncFunc, someParams); // where [] is the deps from React.useEffect
 ```
 `useAsyncCacheEffect` get the same parameters as `call` function from `useAsyncCache`.
 
 The first given parameter is the function you want to cache. The next parameters are the parameters you would have providen to the function you want to cache.
 
 You can also provide the deps from `React.useEffect` as first parameters, then come the others params.
+
+It will return the same properties as `useAsyncCache` plus the `load` function.
 
 
 ## Use with isomor
