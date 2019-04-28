@@ -4,6 +4,7 @@ import './App.css';
 import { Counter } from './Counter';
 import { SetCounter } from './SetCounter';
 import { ErrorExample } from './ErrorExample';
+import { CounterEffect } from './CounterEffect';
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
       </header>
       <Counter />
       <Counter />
+      <CounterEffect />
       <SetCounter />
       <ErrorExample />
     </div>

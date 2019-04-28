@@ -30,6 +30,12 @@ interface Props {
     children: React.ReactNode;
 }
 export declare function useAsyncCache<T = any>(): UseAsyncCacheReturn<T>;
+export declare function useAsyncCacheEffect<T = any>(deps: readonly any[], fn: Fn, ...args: any): UseAsyncCacheReturn<T> & {
+    load: () => Promise<any>;
+};
+export declare function useAsyncCacheEffect<T = any>(fn: Fn, ...args: any): UseAsyncCacheReturn<T> & {
+    load: () => Promise<any>;
+};
 export declare class AsyncCacheProvider extends React.Component<Props> {
     state: {
         responses: Responses;

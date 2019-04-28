@@ -64,6 +64,21 @@ export function useAsyncCache<T = any>(): UseAsyncCacheReturn<T> {
     return { call: myCall, response, error, ...rest };
 }
 
+export function useAsyncCacheEffect<T = any>(deps: readonly any[], fn: Fn, ...args: any): UseAsyncCacheReturn<T> & { load: () => Promise<any> };
+export function useAsyncCacheEffect<T = any>(fn: Fn, ...args: any): UseAsyncCacheReturn<T> & { load: () => Promise<any> };
+export function useAsyncCacheEffect<T = any>(...params: any): UseAsyncCacheReturn<T> & { load: () => Promise<any> } {
+    let [deps, fn, ...args] = typeof (params[0]) === 'function' ? [[], ...params] : params;
+
+    const { call, ...rest } = useAsyncCache();
+    const load = async () => {
+        return call(fn, ...args);
+    }
+    React.useEffect(() => {
+        load();
+    }, deps);
+    return { load, call, ...rest };
+}
+
 function getId(fn: Fn, args: any): string {
     return md5(`${fn.name}::${JSON.stringify(args)}`);
 }
@@ -89,7 +104,7 @@ export class AsyncCacheProvider extends React.Component<Props> {
         });
     }
 
-    setRequestTime = async(
+    setRequestTime = async (
         id: string,
         fn: Fn,
         args: any,
@@ -101,7 +116,7 @@ export class AsyncCacheProvider extends React.Component<Props> {
         return requestTime;
     }
 
-    setError = async(
+    setError = async (
         id: string,
         fn: Fn,
         args: any,
